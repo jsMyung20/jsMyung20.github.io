@@ -16,7 +16,7 @@
             cursor: crosshair;
         }
 
-        #introScreen {
+        #introScreen, #outroScreen {
             position: fixed;
             width: 100vw;
             height: 100vh;
@@ -28,9 +28,19 @@
             flex-direction: column;
         }
 
+        #introCenter, #outroCenter {
+            position: absolute;
+            top: 45%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            opacity: 0;
+            animation: fadeMoonIn 10s forwards;
+            animation-delay: 5s;
+        }
+
         #subtitle {
             position: absolute;
-            bottom: 60px;
+            bottom: 100px;
             width: 100%;
             text-align: center;
             font-size: 1.5em;
@@ -39,16 +49,6 @@
             font-family: 'Arial', sans-serif;
             opacity: 0;
             animation: fadeIn 2s forwards;
-        }
-
-        #introCenter {
-            position: absolute;
-            top: 45%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            opacity: 0;
-            animation: fadeMoonIn 10s ease-out forwards;
-            animation-delay: 0.3s;
         }
 
         #moonCanvasContainer {
@@ -69,16 +69,15 @@
             z-index: 1000;
         }
 
-        #startButton {
+        #startButton, #retryButton {
             position: absolute;
             top: 60%;
-        
             padding: 10px 20px;
             font-size: 1em;
             border: none;
             border-radius: 8px;
-            background: #00ffff;
-            color: black;
+            background: #6e6e6e;
+            color: white;
             cursor: pointer;
             display: none;
         }
@@ -88,7 +87,7 @@
         }
 
         @keyframes fadeMoonIn {
-            0% { opacity: 0; transform: translate(-50%, -60%) scale(0.5); }
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
             100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
         }
 
@@ -294,21 +293,23 @@
             padding: 2px 8px;
             font-size: 12px;
         }
-
+        
     </style>
 </head>
 
 <body>
-    <!-- 인트로 화면 -->
+    <!-- 인트로 -->
     <div id="introScreen">
         <div id="gameTitle">행성팡팡!</div>
         <div id="introCenter">
             <div id="moonCanvasContainer"></div>
         </div>
         <div id="subtitle"></div>
-        <button id="startButton" onclick="startGame()">🚀 게임 시작</button>
-        <audio id="typingSound" src="https://cdn.pixabay.com/download/audio/2023/03/14/audio_5db2bcb94e.mp3?filename=typewriter-141302.mp3"></audio>
+        <button id="startButton" onclick="startGame()">🚀 게임 시작 🚀</button>
     </div>
+
+    <!-- 아웃트로 -->
+
     
     <div id="gameContainer">
         <!-- 십자선 -->
@@ -393,15 +394,16 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     
     <!-- Cannon.js 물리 엔진 (여러 CDN 시도) -->
-    <script src="
-    https://cdn.jsdelivr.net/npm/cannon@0.6.2/build/cannon.min.js
-    "></script>
+    <script src="https://cdn.jsdelivr.net/npm/cannon@0.6.2/build/cannon.min.js"></script>
     
+    <!-- 인트로 스크립트 -->
+    <script src="intro.js"></script>
+
     <!-- 게임 스크립트 -->
     <script src="game.js"></script>
 
-    <!-- 인트로 스크립트 -->
-    <script src="intro.js"></script>
+    <!-- 아웃트로 스크립트 -->
+    
 
     <script>
         // 파워 미터 업데이트

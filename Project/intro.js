@@ -18,23 +18,41 @@ let currentChar = 0;
 const subtitle = document.getElementById("subtitle");
 const gameTitle = document.getElementById("gameTitle");
 const startButton = document.getElementById("startButton");
+const typingSound = document.getElementById("typingSound");
+const moonSound = document.getElementById("moonSound");
+const titleSound = document.getElementById("titleSound");
+
+
+
+
 
 function typeNextChar() {
     if (currentLine >= introScript.length) {
+        typingSound.pause();
         startButton.style.display = "inline-block";
         gameTitle.style.display = "block";
+        titleSound.currentTime = 0;
+        titleSound.play();
         return;
     }
 
     const line = introScript[currentLine];
+    
+    if (currentChar === 0) {
+        typingSound.currentTime = 0;
+        typingSound.play();
+    }
 
     if (currentChar < line.length) {
         subtitle.innerHTML += line[currentChar];
         currentChar++;
         setTimeout(typeNextChar, 50);
     } else {
+        typingSound.pause();
         if (currentLine === 3) {
             initMoonAnimation();
+            moonSound.currentTime = 0;
+            moonSound.play();
         }
         subtitle.innerHTML += "<br/>";
         currentLine++;
@@ -90,10 +108,23 @@ function animateMoon() {
 
 function startGame() {
     const intro = document.getElementById('introScreen');
+    const gameContainer = document.getElementById('gameContainer');
+    
+    // 게임 컨테이너를 먼저 표시
+    gameContainer.style.display = 'block';
+    
+    // 인트로 화면 페이드 아웃
     intro.style.animation = "fadeOut 1s forwards";
+    
     setTimeout(() => {
+        // 인트로 화면 숨기기
         intro.style.display = 'none';
-        window.checkLibrariesAndInit();
+        
+        // 게임 초기화
+        if (typeof checkLibrariesAndInit === 'function') {
+            checkLibrariesAndInit();
+        } else {
+            console.error('게임 초기화 함수를 찾을 수 없습니다.');
+        }
     }, 1000);
 }
-

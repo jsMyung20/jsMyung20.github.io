@@ -15,6 +15,8 @@ const introScript = [
 
 let currentLine = 0;
 let currentChar = 0;
+let isTypingComplete = false;
+let isSkipped = false;
 const subtitle = document.getElementById("subtitle");
 const gameTitle = document.getElementById("gameTitle");
 const startButton = document.getElementById("startButton");
@@ -27,12 +29,10 @@ const titleSound = document.getElementById("titleSound");
 
 
 function typeNextChar() {
+    if (isSkipped) return; // 스킵되었으면 실행 중단
+    
     if (currentLine >= introScript.length) {
-        typingSound.pause();
-        startButton.style.display = "inline-block";
-        gameTitle.style.display = "block";
-        titleSound.currentTime = 0;
-        titleSound.play();
+        completeTyping();
         return;
     }
 
@@ -58,15 +58,97 @@ function typeNextChar() {
         currentLine++;
         currentChar = 0;
         setTimeout(() => {
+            if (isSkipped) return; // 스킵되었으면 실행 중단
             subtitle.innerHTML = '';
             typeNextChar();
         }, 1350);
     }
 }
 
+function completeTyping() {
+    isTypingComplete = true;
+    typingSound.pause();
+    startButton.style.display = "inline-block";
+    gameTitle.style.display = "block";
+    titleSound.currentTime = 0;
+    titleSound.play();
+    hideSkipMessage();
+}
+
+function skipTyping() {
+    if (isTypingComplete) return;
+    
+    // 스킵 플래그 설정으로 모든 진행 중인 애니메이션/사운드 중단
+    isSkipped = true;
+    
+    // 모든 사운드 중단
+    typingSound.pause();
+    moonSound.pause();
+    
+    // 화면을 클리어 (원래 스크립트 완료 후 상태와 동일하게)
+    subtitle.innerHTML = '';
+    
+    // 달 애니메이션을 즉시 초기화하고 표시
+    if (!moonScene) {
+        console.log("initMoonAnimation");
+        initMoonAnimation();
+
+        document.getElementById('introCenter').style.opacity = '1';
+    }
+    
+    // 달 컨테이너를 즉시 보이게 함
+    const moonContainer = document.getElementById('moonCanvasContainer');
+    if (moonContainer) {
+        moonContainer.style.display = 'block';
+        moonContainer.style.opacity = '1';
+    }
+    
+    completeTyping();
+}
+
+function showSkipMessage() {
+    let skipMessage = document.getElementById('skipMessage');
+    if (!skipMessage) {
+        skipMessage = document.createElement('div');
+        skipMessage.id = 'skipMessage';
+        skipMessage.innerHTML = 'SPACE 키를 눌러 스킵';
+        skipMessage.style.cssText = `
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #ffffff;
+            font-size: 14px;
+            opacity: 0.7;
+            z-index: 1000;
+            font-family: inherit;
+        `;
+        document.body.appendChild(skipMessage);
+    }
+    skipMessage.style.display = 'block';
+}
+
+function hideSkipMessage() {
+    const skipMessage = document.getElementById('skipMessage');
+    if (skipMessage) {
+        skipMessage.style.display = 'none';
+    }
+}
+
 window.addEventListener('load', () => {
-            setTimeout(typeNextChar, 1000);
-        });
+    setTimeout(() => {
+        typeNextChar();
+        showSkipMessage();
+    }, 1000);
+});
+
+// 스페이스바 키 이벤트 리스너 추가
+window.addEventListener('keydown', (event) => {
+    if (event.code === 'Space') {
+        event.preventDefault(); // 스페이스바의 기본 동작 방지
+        skipTyping();
+    }
+});
 
 
 
